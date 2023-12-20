@@ -1,0 +1,131 @@
+{% extends 'base1.html' %}
+{% block title %}Video Approval Page{% endblock title %}
+{% block content %}
+<style>
+  .loading-overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    top: 0;
+    left: 0;
+    background-color: white; /* White background */
+    z-index: 1000; /* Sit on top */
+    display: flex;
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+}
+
+.loading {
+    text-align: center;
+}
+
+</style>
+<!-- Loading Animation -->
+<div class="loading-overlay" id="unique-loading-overlay">
+    <div class="loading" id="unique-loading-animation">    
+        <div class="jumping-dots-loader">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div>
+            Processing
+        </div>
+        <div>
+            Do not close or reload this page
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h2>Unapproved Employees</h2>
+            <br>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th> Employee Name </th>
+                            <th> Employee ID </th>
+                            <th> Company Name </th>
+                            <th> Approve </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for video in videos %}
+                            <tr>
+                                <td class="py-1">
+                                    {{ video.employee.employee_name }}
+                                </td>
+                                <td>
+                                    {{ video.employee.employee_id }}
+                                </td>
+                                <td>
+                                    {{ video.company.company_name }}
+                                </td>
+                                <td>
+                                    <input type="checkbox" class="approve-checkbox" data-url="{% url 'approve_video' video.id %}">
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <li class="no-videos">No videos to approve</li>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+           
+        </div>
+        <button id="approve-button" class="btn btn-success">Approve Selected</button>
+    </div>
+</div>
+
+<script>
+    var loadingAnimation = document.getElementById('unique-loading-animation');
+    var maxCheckboxes = 6;
+
+    document.getElementById('approve-button').addEventListener('click', function() {
+        loadingAnimation.style.display = 'block';
+        var checkboxes = document.querySelectorAll('.approve-checkbox:checked');
+        checkboxes.forEach(function(checkbox, index) {
+            setTimeout(function() {
+                window.location.href = checkbox.getAttribute('data-url');
+            }, 10000 * index);
+        });
+    });
+
+    loadingAnimation.style.display = 'block';
+
+    window.onload = function() {
+        loadingAnimation.style.display = 'none';
+        var checkboxes = document.querySelectorAll('.approve-checkbox');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                var checkedCheckboxes = document.querySelectorAll('.approve-checkbox:checked');
+                if(checkedCheckboxes.length > maxCheckboxes) {
+                    this.checked = false;
+                    alert('You can select a maximum of ' + maxCheckboxes + ' videos.');
+                }
+            });
+        });
+    };
+
+    var loadingOverlay = document.getElementById('unique-loading-overlay');
+
+document.getElementById('approve-button').addEventListener('click', function() {
+    loadingOverlay.style.display = 'flex'; // Show the overlay
+    var checkboxes = document.querySelectorAll('.approve-checkbox:checked');
+    checkboxes.forEach(function(checkbox, index) {
+        setTimeout(function() {
+            window.location.href = checkbox.getAttribute('data-url');
+        }, 10000 * index);
+    });
+});
+
+// Hide the overlay once the page is fully loaded
+window.onload = function() {
+    loadingOverlay.style.display = 'none';
+};
+</script>
+{% endblock content %}

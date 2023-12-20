@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "Ironman",
+			"path": ".."
+		},
+		{
+			"name": "templates",
+			"path": "../../../../Downloads/Batman/cam_dashboard/templates"
+		}
+	],
+	"settings": {}
+}

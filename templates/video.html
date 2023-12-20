@@ -1,0 +1,15 @@
+<!-- templates/video_feed.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Video Feed</title>
+</head>
+<body>
+    <h1>Your Video Feed</h1>
+
+    <!-- Display the video feed (if applicable) -->
+    <img src="{% url 'video_feed_stream' employee_name=employee_name %}" alt="Video Feed">
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!-- templates/enter_name.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Video Name</title>
+</head>
+<body>
+    <h1>Enter Video Name</h1>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <label for="name">Video Name:</label>
+        <input type="text" name="name" required>
+        <button type="submit">Start Video Feed</button>
+    </form>
+
+</body>
+</html>

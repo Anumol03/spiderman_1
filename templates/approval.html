@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Approval</title>
+</head>
+<body>
+    <h1>Approve Videos</h1>
+    <ul>
+        {% for video in videos %}
+            <li>
+                Video ID: {{ video.id }} - {{ video.employee.name }} ({{ video.company.company_name }})
+                <!-- Link to approve each video -->
+                <a href="{% url 'approve_video' video.id %}">Approve</a>
+            </li>
+        {% empty %}
+            <li>No videos to approve</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

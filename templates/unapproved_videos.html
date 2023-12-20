@@ -1,0 +1,15 @@
+{% extends 'base2.html' %}
+{% block content %}
+    <h1>Unapproved Videos</h1>
+
+    {% for video in videos %}
+    <li>
+        Video ID: {{ video.id }} - {{ video.employee.name }} ({{ video.company.company_name }})
+        <!-- Link to approve each video -->
+        <a href="{% url 'approve_video' video.id %}">Approve</a>
+    </li>
+{% empty %}
+    <li>No videos to approve</li>
+{% endfor %}
+    <!-- You can add additional HTML elements as needed -->
+{% endblock %}

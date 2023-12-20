@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+{% load static %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+<style>
+  /* Style to control the chart size */
+  #employeeChart {
+      width: 400px; /* Set the width in pixels */
+      height: 400px; /* Set the height to maintain aspect ratio */
+      display: block; /* Ensures the canvas behaves as expected */
+      margin: auto; /* Center the chart */
+  }
+</style>
+
+<br>
+<div class="row">
+  <div class="col-lg-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Approval</h4>
+        <p class="card-description">
+          Jezt<code>Xengine</code>
+        </p>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Company Name</th>
+                <th>Company Id</th>
+                <th>Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <form method="post">
+                {% csrf_token %}
+                {% for user in users %}
+              <tr>
+                <td>{{ user.company_name }}</td>
+                <td>{{ user.company_id }}</td>
+                <td>12 May 2017</td>
+                <td><button  type="submit" name="user_id" value="{{ user.id }}"class="badge badge-success">Approve</button></td>
+              </tr>
+              {% endfor %}
+              </form>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 grid-margin transparent">
+    <div class="row">
+      <div class="col-md-6 mb-4 stretch-card transparent">
+        <div class="card card-tale">
+          <div class="card-body">
+            <p class="mb-4">Total Companies</p>
+            <p class="fs-30 mb-2">{{ total_company_count }}</p>
+            <p>Approved</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4 stretch-card transparent">
+        <div class="card card-dark-blue">
+          <div class="card-body">
+            <p class="mb-4">Pending Approval</p>
+            <p class="fs-30 mb-2">{{Unapproved_count}}</p>
+            <p>Unapproved</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-4 mb-lg-0 stretch-card transparent">
+        <div class="card card-light-blue">
+          <div class="card-body">
+            <p class="mb-4">Total Number Of Employees</p>
+            <p class="fs-30 mb-2">{{total_employee_count}}</p>
+            <p>Of all the Companies </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 stretch-card transparent">
+        <div class="card card-light-danger">
+          <div class="card-body">
+            <p class="mb-4">Total Number Of SuperUsers</p>
+            <p class="fs-30 mb-2">{{superuser_count}}</p>
+            <p>Jezt Super User</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12 grid-margin stretch-card">
+    <div class="card position-relative">
+      <div class="card-body">
+        <div id="detailedReports" class="carousel slide detailed-report-carousel position-static pt-2" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div class="row">
+                <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-start">
+                  <div class="ml-xl-4 mt-3">
+                    <br>
+                    <br>
+                  <p class="card-title">Detailed Reports</p>
+                    <h1 class="text-primary">{{total_employee_count}}</h1>
+                    <h3 class="font-weight-500 mb-xl-4 text-primary">Total Employees</h3>
+                  </div>  
+                  </div>
+                <div class="col-md-12 col-xl-9">
+                  <div class="row">
+                    <div class="col-md-6 border-right">
+                      <div class="table-responsive mb-3 mb-md-0 mt-3">
+                        <table class="table table-borderless report-table">
+                          <tbody>
+                            {% for company in company_data %}<tr>
+                            <td class="text-muted">{{ company.name }}</td>
+                            <td class="w-100 px-0">
+                              <div class="progress progress-md mx-4">
+                                <div class="progress-bar bg-primary" role="progressbar" style="width: {{ company.percentage }}%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+                              </div>
+                            </td>
+                            <td><h5 class="font-weight-bold mb-0"> {{ company.percentage }} % </h5></td>
+                            {% endfor %}
+      
+                        </tbody></table>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mt-3"><div class="chartjs-size-monitor">
+                      <canvas id="employeeChart" class="chartjs-render-monitor"></canvas>
+                     
+                      <!-- <canvas id="north-america-chart" width="776" height="388" style="display: block; width: 388px; height: 194px;" class="chartjs-render-monitor"></canvas> -->
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+</div></div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var companyData = {{ company_data|safe }};
+  var companyNames = companyData.map(function(data) { return data.name; });
+  var percentages = companyData.map(function(data) { return data.percentage; });
+
+  var ctx = document.getElementById('employeeChart').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+          labels: companyNames,
+          datasets: [{
+              data: percentages,
+              backgroundColor: [
+                  '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+                  // Add more colors as needed
+              ],
+              borderWidth: 1
+          }]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+              legend: {
+                  display: false, // This line will hide the legend
+              },
+              title: {
+                  display: true,
+                  text: 'Employee Percentages by Company'
+              }
+          }
+      }
+  });
+</script>
+     
+<!-- <h1>User Approval Page</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <ul>
+        {% for user in users %}
+            <li>
+                <strong>{{ user.company_name }}</strong> (ID: {{ user.company_id }})
+                <button type="submit" name="user_id" value="{{ user.id }}">Approve</button>
+            </li>
+        {% endfor %}
+    </ul>
+</form> -->
+{% endblock %}
